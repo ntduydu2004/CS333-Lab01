@@ -43,17 +43,17 @@ int main(int argc, char*argv[]) {
             ptr = buffer;
             // Fork a new process
             int pid = fork();
-            // Parent process
             if (pid > 0) {
-                // Wait for the child process to finish
+                // Wait for the other process to finish
                 wait(0);
                 // Clear the arguments
                 memset(args, 0, sizeof(args));
                 // Continue to the next input
                 continue;
             } else if (pid == 0) {
-                // Child process
                 // Execute the command
+                // The output of the command will be printed to the standard output
+                // which can be read by the parent process
                 exec(args[0], args);
             }
         }
