@@ -4,12 +4,11 @@
 
 #define BUFFER_SIZE 1024
 
-int main(int argc, char*argv[]) {
+int main(int argc, char* argv[]) {
     if (argc < 2) {
         printf("Usage: xargs command\n");
         exit(1);
     }
-
     // Temp variable to store the input one by one character
     char temp;
     // Buffer to store the input
@@ -18,50 +17,38 @@ int main(int argc, char*argv[]) {
     char* args[MAXARG];
     // Pointer to the buffer
     char* ptr = buffer;
+    int argsc = argc;
 
-    // Read the input from the standard input
-    // Read one character at a time
-    // If return 1, then read successfully
-    // If return 0, then no more input
+    for (int i = 0; i < argc; i++) {
+        args[i] = argv[i + 1];
+    }
+
     while (read(0, &temp, 1) == 1) {
-        // End of the input when newline is read
-        if (temp == '\n') {
-            // Copies the command-line arguments
-            for (int i = 0; i < argc; i++) {
-                args[i] = argv[i + 1];
-            }
-            // Null-terminate the arguments
-            args[argc - 1] = buffer;
-            
-            // Print the arguments
-            for (int i = 0; i < argc - 1; i++) {
-                printf("%s\n", args[i]);
-            }
-            // Clear the buffer
+        if (temp == ' ') {
+            args[argsc++ - 1] = buffer;
             memset(buffer, 0, sizeof(buffer));
-            // Reset the pointer to the buffer
             ptr = buffer;
-            // Fork a new process
+            continue;
+        }
+        if (temp == '\n') {
+            args[argsc++ - 1] = buffer;
             int pid = fork();
             if (pid > 0) {
-                // Wait for the other process to finish
                 wait(0);
-                // Clear the arguments
-                memset(args, 0, sizeof(args));
-                // Continue to the next input
+                memset(buffer, 0, sizeof(buffer));
+                ptr = buffer;
+                argsc = argc;
+                for (int i = argc; i < MAXARG; i++) {
+                    args[i] = 0;
+                }
                 continue;
-            } else if (pid == 0) {
-                // Execute the command
-                // The output of the command will be printed to the standard output
-                // which can be read by the parent process
+            } else {
                 exec(args[0], args);
             }
         }
-        // Store the input into the buffer
         *ptr = temp;
-        // Move the pointer to the next position
         ptr++;
     }
-    
+
     return 0;
 }
