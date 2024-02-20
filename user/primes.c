@@ -1,7 +1,7 @@
 #include "kernel/types.h"
 #include "user/user.h"
 void process(int p, int rd, int wd){
-    fprintf(2, "%d\n", p);
+    fprintf(2, "prime %d\n", p);
     while(1){
         int num;
         if (read(rd, &num, sizeof(int)) <= 0){
@@ -42,7 +42,6 @@ main(void){
                 exit(0);
             }
             process(prime, p[0], p2[1]);
-            close(p[0]);
             p[0] = p2[0];
             p[1] = p2[1];
             
