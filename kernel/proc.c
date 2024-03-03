@@ -296,6 +296,9 @@ fork(void)
   }
   np->sz = p->sz;
 
+  // copy tracing arguments
+  np->trace_arg = p->trace_arg;
+
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
 
